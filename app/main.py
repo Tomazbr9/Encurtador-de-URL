@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, status, Response
+from models.__all_models import *
 
 app = FastAPI()
-
 
 @app.get('/', status_code=status.HTTP_200_OK)
 async def home():
@@ -9,5 +9,4 @@ async def home():
 
 if __name__ == '__main__':
     import uvicorn
-
     uvicorn.run(app='main:app', host='0.0.0.0', port=8000, reload=True)
