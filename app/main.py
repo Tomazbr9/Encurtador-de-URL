@@ -1,11 +1,9 @@
-from fastapi import FastAPI, HTTPException, status, Response
+from fastapi import FastAPI
+from views.home_view import router
 from models.__all_models import *
 
 app = FastAPI()
-
-@app.get('/', status_code=status.HTTP_200_OK)
-async def home():
-    return Response(content='Sucesso', status_code=status.HTTP_200_OK)
+app.include_router(router, prefix='/api')
 
 if __name__ == '__main__':
     import uvicorn

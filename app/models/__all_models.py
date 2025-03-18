@@ -1,5 +1,5 @@
-from app.core.database import DBConnectionHandler
-from app.core.settings import Base
+from core.database import DBConnectionHandler
+from core.settings import Base
 
 # Criar todas as tabelas no banco de dados
 engine = DBConnectionHandler()

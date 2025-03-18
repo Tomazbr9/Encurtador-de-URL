@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
-from settings import DB_URL
+from .settings import DB_URL
 from typing import Optional
 
 class DBConnectionHandler:

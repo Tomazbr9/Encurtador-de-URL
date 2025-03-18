@@ -1,5 +1,5 @@
 from pydantic import BaseModel, HttpUrl
 
 # Criando modelo de validação 
-class CreateUrl(BaseModel):
+class UrlModel(BaseModel):
     url: HttpUrl 
