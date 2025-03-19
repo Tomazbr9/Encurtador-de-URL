@@ -12,9 +12,7 @@ class DBConnectionHandler:
     
     # Função para criar engine do banco de dados
     def create_database_engine(self) -> Engine:
-        engine: Engine = create_engine(
-            self.__connection_url, connect_args={'check_same_thread': False}
-        )
+        engine: Engine = create_engine(self.__connection_url)
         return engine
     
     # Função para obter a engine do banco de dados
@@ -23,9 +21,7 @@ class DBConnectionHandler:
     
     def __enter__(self):
         # Cria a sessão do banco de dados
-        session_make = sessionmaker(
-            bind=self.__engine, connect_args={"check_same_thread": False}
-        )
+        session_make = sessionmaker(bind=self.__engine)
         self.session = session_make()
         return self
     
