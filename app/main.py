@@ -1,9 +1,11 @@
 from fastapi import FastAPI
-from views.home_view import router
+from fastapi.staticfiles import StaticFiles
+from views.routes import router
 from models.__all_models import *
 
 app = FastAPI()
-app.include_router(router, prefix='/api')
+app.mount('/static', StaticFiles(directory='app/static'), name='static')
+app.include_router(router)
 
 if __name__ == '__main__':
     import uvicorn
