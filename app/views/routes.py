@@ -20,8 +20,13 @@ async def home(request: Request):
 # Rota para encurtar url.
 @router.post('/short', status_code=status.HTTP_201_CREATED)
 async def shorten_url(
-    long_url: UrlModel, 
+    request: Request,
     db: Session = Depends(session_local)) -> JSONResponse:
+    
+    data = await request.form()
+    url = data.get('url')
+
+    url_valid = UrlModel(url=str(url))
 
     # Gera código aleatorio.
     short_url = generate_code()
@@ -30,7 +35,7 @@ async def shorten_url(
     while db.query(Url).filter(Url.short_url == short_url).first():
         short_url = generate_code()
     
-    new_url = Url(short_url=short_url, long_url=long_url.url)
+    new_url = Url(short_url=short_url, long_url=url_valid.url)
     db.add(new_url)
     db.commit()
     
