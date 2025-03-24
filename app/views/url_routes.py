@@ -1,16 +1,16 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
-from models.url_models import Url
-from schemas import UrlModel
+from models.url_models import UrlModel
 from sqlalchemy.orm import Session
 from services.db_services import session_local
-from services.url_service import generate_code
+from app.services.url_services import generate_code, is_valid_url
 from core.settings import TEMPLATES
 from fastapi.requests import Request
 
-router = APIRouter()
+urls_router = APIRouter()
 
-@router.get('/home', status_code=status.HTTP_200_OK)
+# rota para home no front end
+@urls_router.get('/home', status_code=status.HTTP_200_OK)
 async def home(request: Request):
     context = {
         'request': request
@@ -18,24 +18,35 @@ async def home(request: Request):
     return TEMPLATES.TemplateResponse('home.html', context=context)
 
 # Rota para encurtar url.
-@router.post('/short', status_code=status.HTTP_201_CREATED)
+@urls_router.post('/short', status_code=status.HTTP_201_CREATED)
 async def shorten_url(
     request: Request,
     db: Session = Depends(session_local)) -> JSONResponse:
     
-    data = await request.form()
+    data = await request.json()
     url = data.get('url')
-
-    url_valid = UrlModel(url=str(url))
+    
+    # Verifica se a url é None ou uma string válida
+    if not url or not isinstance(url, str):
+        return JSONResponse(
+            content={'message': 'A URL deve ser uma string válida!'},
+            status_code=status.HTTP_400_BAD_REQUEST)
+    
+    # verifica se a url é válida
+    if not is_valid_url(url):
+        return JSONResponse(
+            content={'message': 'URL inválida!'},
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
 
     # Gera código aleatorio.
     short_url = generate_code()
     
     # Verifica se o código gerado já existe, caso exista, gera outro codigo. 
-    while db.query(Url).filter(Url.short_url == short_url).first():
+    while db.query(UrlModel).filter(UrlModel.short_url == short_url).first():
         short_url = generate_code()
     
-    new_url = Url(short_url=short_url, long_url=url_valid.url)
+    new_url = UrlModel(short_url=short_url, long_url=url)
     db.add(new_url)
     db.commit()
     
@@ -46,13 +57,13 @@ async def shorten_url(
     )
 
 # Rota para redirecionar para url original
-@router.get('/{short_url}', status_code=status.HTTP_200_OK)
+@urls_router.get('/{short_url}', status_code=status.HTTP_200_OK)
 async def redirect_url(
     short_url: str,
     db: Session = Depends(session_local)) -> RedirectResponse:
     
     # Verifica se já existe a url enviada no db, caso contrario, retorna None
-    url = db.query(Url).filter(Url.short_url == short_url).first()
+    url = db.query(UrlModel).filter(UrlModel.short_url == short_url).first()
 
     if url is None:
         raise HTTPException(
