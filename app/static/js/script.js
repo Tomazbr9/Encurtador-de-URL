@@ -3,8 +3,8 @@ document.getElementById('formUrlShorten').addEventListener('submit', (event)=>{
     
     const urlOriginal = document.getElementById('urlOriginal').value
     const urlResult = document.getElementById('resultUrlShorten')
-
-    console.log(urlOriginal)
+    const urlMessageError = document.getElementById('urlMessageError')
+    urlResult.value = ''
 
     fetch('/short/', {
         method: 'POST',
@@ -13,7 +13,16 @@ document.getElementById('formUrlShorten').addEventListener('submit', (event)=>{
         },
         body: JSON.stringify({"url": urlOriginal})
     })
-    .then(response => response.json()).then(data => {
+    .then(response => {
+        if(!response.ok){
+            return response.json().then(data => {    
+                urlMessageError.style.display = 'block'
+                urlMessageError.textContent = data.message 
+            })
+        }
+        return response.json()
+
+    }).then(data => {
         urlResult.value = data.short_url
     })
     .catch(error => {

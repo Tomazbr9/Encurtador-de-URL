@@ -2,6 +2,7 @@
     --body-color: #E2EFDE;
     --write-color: #FFFFFF; 
     --footer-color: #1F271B;
+    --message-error: #FF6347;
     --font-for-titles: "Montserrat", sans-serif;
     --font-for-normal-texts: "Open Sans", sans-serif;
     --gap: 15px;
@@ -102,6 +103,14 @@ body {
     font-family: var(--font-for-normal-texts);
     font-weight: 300;
     font-size: 20px;
+}
+
+.message-error {
+    display: none;
+    font-size: 13px;
+    font-family: var(--font-for-normal-texts);
+    color: var(--message-error);
+    margin: 0;
 }
 
 /* footer */
