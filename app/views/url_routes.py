@@ -3,22 +3,13 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from models.url_models import UrlModel
 from sqlalchemy.orm import Session
 from services.db_services import session_local
-from app.services.url_services import generate_code, is_valid_url
-from core.settings import TEMPLATES
+from services.url_services import generate_code, is_valid_url
 from fastapi.requests import Request
 
-urls_router = APIRouter()
-
-# rota para home no front end
-@urls_router.get('/home', status_code=status.HTTP_200_OK)
-async def home(request: Request):
-    context = {
-        'request': request
-    }
-    return TEMPLATES.TemplateResponse('home.html', context=context)
+url_router = APIRouter()
 
 # Rota para encurtar url.
-@urls_router.post('/short', status_code=status.HTTP_201_CREATED)
+@url_router.post('/short', status_code=status.HTTP_201_CREATED)
 async def shorten_url(
     request: Request,
     db: Session = Depends(session_local)) -> JSONResponse:
@@ -57,7 +48,7 @@ async def shorten_url(
     )
 
 # Rota para redirecionar para url original
-@urls_router.get('/{short_url}', status_code=status.HTTP_200_OK)
+@url_router.get('/{short_url}', status_code=status.HTTP_200_OK)
 async def redirect_url(
     short_url: str,
     db: Session = Depends(session_local)) -> RedirectResponse:

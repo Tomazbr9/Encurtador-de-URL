@@ -6,8 +6,10 @@ class UserModel(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String, nullable=False)
+    username = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
+
+    urls = relationship('UrlModel', back_populates="user")
 
     def __repr__(self):
         return f'User [Username={self.username}, Password={self.password}]'
@@ -18,9 +20,9 @@ class UrlModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     short_url = Column(String, nullable=False)
     long_url = Column(String, nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
 
-    user = relationship('UserModel', back_populates="url")
+    user = relationship('UserModel', back_populates="urls")
 
     def __repr__(self):
         return f'URL [Short Url={self.short_url}, Long Url={self.long_url}]'
