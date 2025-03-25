@@ -41,17 +41,20 @@ async def create_user(
 # Rota para processar login
 @user_router.post('/login_user', status_code=status.HTTP_200_OK)
 async def login_user(
-    login_user: UserFields,
     response: Response,
     request: Request,
     db: Session = Depends(session_local)) -> JSONResponse:
-    
+
+    data = await request.json()
+    username: str = data.get('username')
+    password: str = data.get('password')
+
     # Busca usuario no banco de dados
     user = db.query(UserModel).filter(
-        UserModel.username == login_user.username).first()
+        UserModel.username == username).first()
     
     # Verifica se o usuario existe
-    if not user or not verify_password(login_user.password, str(user.password)):
+    if not user or not verify_password(password, str(user.password)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail='Usuário ou senha inválidos'
