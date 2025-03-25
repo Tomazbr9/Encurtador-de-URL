@@ -1,37 +1,68 @@
-document.getElementById('formUrlShorten').addEventListener('submit', (event)=>{
-    event.preventDefault()
-    
-    const urlOriginal = document.getElementById('urlOriginal').value
-    const urlResult = document.getElementById('resultUrlShorten')
-    const urlMessageError = document.getElementById('urlMessageError')
-    urlResult.value = ''
+const formUrlShorten = document.getElementById('formUrlShorten')
+if(formUrlShorten){
+    formUrlShorten.addEventListener('submit', (event)=>{
+        event.preventDefault()
+        
+        const urlOriginal = document.getElementById('urlOriginal').value
+        const urlResult = document.getElementById('resultUrlShorten')
+        const urlMessageError = document.getElementById('urlMessageError')
+        urlResult.value = ''
 
-    fetch('/short/', {
+        fetch('/short/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({"url": urlOriginal})
+        })
+        .then(response => {
+            if(!response.ok){
+                return response.json().then(data => {    
+                    urlMessageError.style.display = 'block'
+                    urlMessageError.textContent = data.message 
+                })
+            }
+            return response.json()
+
+        }).then(data => {
+            urlResult.value = data.short_url
+        })
+        .catch(error => {
+            console.error('Error: ', error)
+        })
+    })
+}
+
+const btnCopy = document.getElementById('btnCopy')
+if(btnCopy){
+    document.getElementById('btnCopy').addEventListener('click', (event)=>{
+        const urlResult = document.getElementById('resultUrlShorten')
+        navigator.clipboard.writeText(urlResult.value)
+    })
+}
+
+document.getElementById('formLogin').addEventListener('submit', (event)=>{
+    event.preventDefault()
+
+    const usernameLogin = document.getElementById('usernameLogin').value
+    const passwordLogin = document.getElementById('passwordlogin').value
+    const loginMessageError = document.getElementById('loginMessageError')
+
+    fetch('/login_user/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json' 
         },
-        body: JSON.stringify({"url": urlOriginal})
+        body: JSON.stringify(
+            {'username': usernameLogin, 'password': passwordLogin}
+        )
+    }).then(response => response.json()).then(data => {
+        loginMessageError.style.display = 'block'
+        loginMessageError.textContent = data.message
+    }).catch(error => {
+        loginMessageError.style.display = 'block'
+        loginMessageError.textContent = 'Erro ao fazer login'
+        console.error('Erro:', error)
     })
-    .then(response => {
-        if(!response.ok){
-            return response.json().then(data => {    
-                urlMessageError.style.display = 'block'
-                urlMessageError.textContent = data.message 
-            })
-        }
-        return response.json()
-
-    }).then(data => {
-        urlResult.value = data.short_url
-    })
-    .catch(error => {
-        console.error('Error: ', error)
-    })
-})
-
-document.getElementById('btnCopy').addEventListener('click', (event)=>{
-    const urlResult = document.getElementById('resultUrlShorten')
-    navigator.clipboard.writeText(urlResult.value)
 })
 
