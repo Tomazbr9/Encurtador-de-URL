@@ -10,25 +10,28 @@ from services.authentication_services import hash_password, verify_password
 user_router = APIRouter()
 
 # Rota para criar usuário
-@user_router.post('/create_user', status_code=status.HTTP_201_CREATED)
+@user_router.post('/register_user', status_code=status.HTTP_201_CREATED)
 async def create_user(
-    create_user: UserFields,
     request: Request,
     db: Session = Depends(session_local)) -> JSONResponse:
+
+    data = await request.json()
+    username: str = data.get('username')
+    password: str = data.get('password')   
     
     # Verifica se usuario ja existe
     existing_user = db.query(UserModel).filter(
-        UserModel.username == create_user.username).first()
+        UserModel.username == username).first()
     
     if existing_user:
-        raise HTTPException(
+        return JSONResponse(
+            content={'message':'Usuário já existe!'},
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Usuário já existe!'
         )
     
     new_user = UserModel(
-        username=create_user.username,
-        password=hash_password(create_user.password))
+        username=username,
+        password=hash_password(password))
     
     db.add(new_user)
     db.commit()
@@ -55,9 +58,9 @@ async def login_user(
     
     # Verifica se o usuario existe
     if not user or not verify_password(password, str(user.password)):
-        raise HTTPException(
+        return JSONResponse(
+            content={'message': 'Usuário ou senha inválidos'},
             status_code=status.HTTP_400_BAD_REQUEST, 
-            detail='Usuário ou senha inválidos'
         )
     
     # insere dados do usuario nos cookies
