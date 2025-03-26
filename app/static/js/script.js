@@ -15,19 +15,12 @@ if(formUrlShorten){
             },
             body: JSON.stringify({"url": urlOriginal})
         })
-        .then(response => {
-            if(!response.ok){
-                return response.json().then(data => {    
-                    urlMessageError.style.display = 'block'
-                    urlMessageError.textContent = data.message 
-                })
-            }
-            return response.json()
-
-        }).then(data => {
+        .then(response => response.json()).then(data => {
             urlResult.value = data.short_url
         })
         .catch(error => {
+            urlMessageError.style.display = 'block'
+            urlMessageError.textContent = error.message
             console.error('Error: ', error)
         })
     })
@@ -62,7 +55,6 @@ document.getElementById('formLogin').addEventListener('submit', (event)=>{
     }).catch(error => {
         loginMessageError.style.display = 'block'
         loginMessageError.textContent = 'Erro ao fazer login'
-        console.error('Erro:', error)
     })
 })
 
