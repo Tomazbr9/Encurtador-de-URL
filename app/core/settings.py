@@ -1,5 +1,6 @@
 from sqlalchemy.orm import declarative_base
 from fastapi.templating import Jinja2Templates
+from fastapi.security import HTTPBasic
 
 # Classe base para definições de classes declarativas
 Base = declarative_base()
@@ -7,4 +8,7 @@ Base = declarative_base()
 DB_URL: str = 'sqlite:///sqlite.db'
 # Define o diretorio dos templates
 TEMPLATES = Jinja2Templates(directory='app/templates')
+
+SECURITY = HTTPBasic()
+
 

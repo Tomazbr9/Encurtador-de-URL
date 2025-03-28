@@ -17,16 +17,13 @@ body {
     background-color: var(--body-color);
 }
 
-.main-content {
+.content-center {
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
     max-width: 1200px;
-}
-
-.to-move-away {
-    margin-bottom: 30px;  
+    height: 70vh;
 }
 
 /* Header */
@@ -129,4 +126,14 @@ body {
 
 .text-footer {
     color: var(--write-color);
+}
+
+/* Login */
+
+.form-login {
+    width: 350px;
+}
+
+.btn-login {
+    margin-top: 10px;
 }

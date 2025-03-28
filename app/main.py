@@ -7,8 +7,8 @@ from models.__all_models import *
 
 app = FastAPI()
 app.mount('/static', StaticFiles(directory='app/static'), name='static')
-app.include_router(url_router)
 app.include_router(page_router)
+app.include_router(url_router)
 app.include_router(user_router)
 
 if __name__ == '__main__':

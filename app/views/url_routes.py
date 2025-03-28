@@ -15,8 +15,10 @@ async def shorten_url(
     db: Session = Depends(session_local)) -> JSONResponse:
     
     data = await request.json()
-    url = data.get('url')
+    url: str =  data.get('url')
     
+    # Obtem os dados do usuario caso esteja autenticado
+
     # Verifica se a url é None ou uma string válida
     if not url or not isinstance(url, str):
         return JSONResponse(
@@ -62,6 +64,6 @@ async def redirect_url(
             detail='URL não encontrada!')
     # Redireciona para a pagina da url original
     return RedirectResponse(url=str(url.long_url))
-    
+
 
     

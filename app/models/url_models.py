@@ -20,7 +20,7 @@ class UrlModel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     short_url = Column(String, nullable=False)
     long_url = Column(String, nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=True)
 
     user = relationship('UserModel', back_populates="urls")
 
