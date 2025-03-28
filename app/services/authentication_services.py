@@ -17,10 +17,14 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+# Função para obter usuário autenticado
 def get_current_user(
         credentials: HTTPBasicCredentials = Depends(SECURITY),
         db: Session = Depends(session_local)
-    ) -> UserModel | HTTPException:
+    ) -> UserModel | None:
+
+    if not credentials:
+        return None
     
     user = db.query(UserModel).filter(UserModel.username == credentials.username).first()
 
@@ -31,12 +35,4 @@ def get_current_user(
         )
     
     return user
-
-def get_current_user_optional():
-
-    try:
-        user = Depends(get_current_user)
-        return user
-    except HTTPException:
-        return None
 

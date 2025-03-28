@@ -1,0 +1,29 @@
+{% extends "global/base.html" %}
+{% block main_block %}
+<div class="push-down"></div>
+<div class="container container-historic">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">URL ORIGINAL</th>
+            <th scope="col">URL CURTA</th>
+            <th scope="col">Opcões</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for url in urls %}
+            <tr>
+                <td>{{url.id}}</td>
+                <td>{{url.long_url}}</td>
+                <td>{{url.short_url}}</td>
+                <td class="flex-options">
+                    <a href="/delete_url/{{url.id}}"><i class="bi bi-trash"></i></a>
+                    <a><i class="bi bi-copy"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock main_block %}

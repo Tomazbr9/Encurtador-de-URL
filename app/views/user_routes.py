@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse, Response, RedirectResponse
 from schemas import UserFields
 from sqlalchemy.orm import Session
 from models.url_models import UserModel
-from core.settings import TEMPLATES
+from core.settings import TEMPLATES, SECURITY
 from services.db_services import session_local
 from services.authentication_services import hash_password, verify_password
 
@@ -46,7 +46,7 @@ async def create_user(
 # Rota para processar login
 @user_router.post('/login_user', status_code=status.HTTP_200_OK)
 async def login_user(
-    credentials: HTTPBasicCredentials = Depends(security),
+    credentials: HTTPBasicCredentials = Depends(SECURITY),
     db: Session = Depends(session_local)) -> JSONResponse:
 
     username: str = credentials.username
