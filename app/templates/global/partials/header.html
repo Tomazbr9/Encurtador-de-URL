@@ -2,10 +2,15 @@
     <div class="space-padding-15">
         <div class="container-of-elements-header">
             <div>
-                <img src="{{url_for('static', path='img/logo_encurtador_url.png')}}">
+                <a href="/home"><img src="{{url_for('static', path='img/logo_encurtador_url.png')}}"></a>
             </div>
             <div>
-                <button class="btn btn-primary">Login</button>
+                {% if user %}
+                    <a href="/logout" class="btn btn-primary">Logout</a>
+                {% else %}
+                    <a href="/login" class="btn btn-primary">Login</a>
+                {% endif %}
+                
             </div>
         </div>
     </div>
