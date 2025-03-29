@@ -1,15 +1,11 @@
 from fastapi import APIRouter, Depends, Request, status, HTTPException
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.responses import JSONResponse, Response, RedirectResponse
-from schemas import UserFields
+from fastapi.responses import JSONResponse, Response
 from sqlalchemy.orm import Session
 from models.url_models import UserModel
-from core.settings import TEMPLATES, SECURITY
 from services.db_services import session_local
-from services.authentication_services import hash_password, verify_password
+from services.authentication_services import hash_password, verify_password, create_access_token
 
 user_router = APIRouter()
-security = HTTPBasic()
 
 # Rota para criar usuário
 @user_router.post('/register_user', status_code=status.HTTP_201_CREATED)
@@ -46,16 +42,17 @@ async def create_user(
 # Rota para processar login
 @user_router.post('/login_user', status_code=status.HTTP_200_OK)
 async def login_user(
-    credentials: HTTPBasicCredentials = Depends(SECURITY),
+    request: Request,
     db: Session = Depends(session_local)) -> JSONResponse:
-
-    username: str = credentials.username
-    password: str = credentials.password
+    
+    data = await request.json()
+    
+    username: str = data.get('username')
+    password: str = data.get('password')
 
     # Busca usuario no banco de dados
     user = db.query(UserModel).filter(
         UserModel.username == username).first()
-    
     
     # Verifica se o usuário existe e se a senha está correta
     if not user or not verify_password(password, str(user.password)):
@@ -64,11 +61,21 @@ async def login_user(
             detail="Usuário ou senha inválidos",
         )
     
-    return JSONResponse(
-        content={'message': 'login bem sucedido!'},
-        status_code=status.HTTP_200_OK)
+    access_token: str = create_access_token(user.id)
+    
+    # Cria a resposta e armazena o token no cookie HTTP-only
+    response = JSONResponse({"message": "Login bem sucedido!"})
+    response.set_cookie(
+        key="access_token", 
+        value=access_token,
+        httponly=True, 
+        max_age=60 * 30,
+        secure=True 
+    )
+    
+    return response
 
-@user_router.get('/logout')
+@user_router.get('/logout', status_code=status.HTTP_200_OK)
 async def logout(response: Response):
-    response.delete_cookie('user')
-    return RedirectResponse(url='/login_page')
+    response.delete_cookie("access_token")
+    return {'message': 'logout bem sucedido!'}

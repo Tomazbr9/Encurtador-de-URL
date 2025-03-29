@@ -4,9 +4,8 @@ from models.url_models import UrlModel
 from sqlalchemy.orm import Session
 from services.db_services import session_local
 from services.url_services import generate_code, is_valid_url
-from services.authentication_services import get_current_user
+from services.authentication_services import get_current_user_optional
 from fastapi.requests import Request
-from fastapi.security import HTTPBasicCredentials
 from typing import Optional
 from models.url_models import UserModel
 
@@ -16,7 +15,7 @@ url_router = APIRouter()
 @url_router.post('/short', status_code=status.HTTP_201_CREATED)
 async def shorten_url(
     request: Request,
-    user: Optional[UserModel] = Depends(get_current_user),
+    user: Optional[UserModel] = Depends(get_current_user_optional),
     db: Session = Depends(session_local)) -> JSONResponse:
     
     data = await request.json()
@@ -42,27 +41,32 @@ async def shorten_url(
     while db.query(UrlModel).filter(UrlModel.short_url == short_url).first():
         short_url = generate_code()
 
-    full_short_url = f'http://localhost:8000/{short_url}'
     if user:
-        new_url = UrlModel(short_url=full_short_url, long_url=url, user_id=user.id)
+        new_url = UrlModel(short_url=short_url, long_url=url, user_id=user['user_id'])
         db.add(new_url)
         db.commit()
     
     # Retorna a url encurtada
     return JSONResponse(
-        content={'short_url': full_short_url},
+        content={'short_url': f'http://localhost:8000/{short_url}'},
         status_code=status.HTTP_201_CREATED
     )
+
+# Rota criada para deletar urls
+url_router.post('/delete_url/{id}', status_code=status.HTTP_202_ACCEPTED)
+async def delete_url(id: str, db: Session = Depends(session_local)):
+    db.query(UrlModel).filter(UrlModel.id == id).delete()
+    
 
 # Rota para redirecionar para url original
 @url_router.get('/{short_url}', status_code=status.HTTP_200_OK)
 async def redirect_url(
     short_url: str,
     db: Session = Depends(session_local)) -> RedirectResponse:
-    
+
     # Verifica se já existe a url enviada no db, caso contrario, retorna None
     url = db.query(UrlModel).filter(UrlModel.short_url == short_url).first()
-
+    
     if url is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -70,11 +74,7 @@ async def redirect_url(
     # Redireciona para a pagina da url original
     return RedirectResponse(url=str(url.long_url))
 
-# Rota criada para deletar urls
-url_router.post('/delete_url/{id}', status_code=status.HTTP_202_ACCEPTED)
-async def delete_url(id: str, db: Session = Depends(session_local)):
-    db.query(UrlModel).filter(UrlModel.id == id).delete()
-    
+
 
 
     
