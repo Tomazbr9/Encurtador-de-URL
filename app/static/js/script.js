@@ -43,15 +43,15 @@ if(formLogin){
         const passwordLogin = document.getElementById('passwordlogin').value
         const loginMessageError = document.getElementById('loginMessageError')
 
-        credentials = `${usernameLogin}:${passwordLogin}`
-
         try {
             const response = await fetch('/login_user/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Basic ${btoa(credentials)}`
-                }
+                },
+                body: JSON.stringify({
+                    'username': usernameLogin, 'password': passwordLogin
+                })
             })
 
             const data = await response.json()
@@ -59,6 +59,7 @@ if(formLogin){
             if (response.ok) {
                 loginMessageError.style.display = 'none'
                 window.location.href = '/home'
+                localStorage.setItem('access_token', data.access_token)
             } else {
                 loginMessageError.style.display = 'block'
                 loginMessageError.textContent = data.detail || 'Usuário ou senha inválidos'
@@ -96,3 +97,20 @@ if(formRegister){
         })
     })
 }
+
+const logout = document.getElementById('logout')
+if(logout){
+    logout.addEventListener('click', async ()=>{
+
+        const response = await fetch('/logout')
+
+        if(response){
+            console.log("tudo ok")
+            window.location.href = '/home'
+        } 
+        else {
+            console.log("Erro ao fazer logout")
+        }
+    })
+}
+

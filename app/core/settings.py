@@ -9,6 +9,5 @@ DB_URL: str = 'sqlite:///sqlite.db'
 # Define o diretorio dos templates
 TEMPLATES = Jinja2Templates(directory='app/templates')
 
-SECURITY = HTTPBasic()
 
 
