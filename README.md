@@ -19,37 +19,29 @@ Este projeto é um encurtador de URLs desenvolvido em Python. Ele permite que vo
 1. **Clone o repositório**:
    ```bash
    git clone https://github.com/Tomazbr9/Encurtador-de-URL.git
-Navegue até o diretório do projeto:
+   ```
+2. **Navegue até o diretório do projeto**:
+   ```bash
+   cd Encurtador-de-URL
+   ```
+3. **Ative o ambiente virtual**:
+   - No Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - No Linux ou macOS:
+     ```bash
+     source venv/bin/activate
+     ```
+4. **Instale as dependências**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. **Execute o aplicativo**:
+   ```bash
+   python app/main.py
+   ```
 
-bash
-Copiar
-Editar
-cd Encurtador-de-URL
-Ative o ambiente virtual:
+## Contribuição
 
-No Windows:
-
-bash
-Copiar
-Editar
-venv\Scripts\activate
-No Linux ou macOS:
-
-bash
-Copiar
-Editar
-source venv/bin/activate
-Instale as dependências:
-
-bash
-Copiar
-Editar
-pip install -r requirements.txt
-Execute o aplicativo:
-
-bash
-Copiar
-Editar
-python app/main.py
-Contribuição
-Sinta-se à vontade para contribuir com este projeto. Você pode fazer isso através de pull requests ou abrindo issues para relatar problemas e sugerir melhorias.
+Sinta-se à vontade para contribuir com este projeto. Você pode fazer isso através de *pull requests* ou abrindo *issues* para relatar problemas e sugerir melhorias.
