@@ -22,8 +22,9 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+# Função para geração de token 
 def create_access_token(
-        subject: Union[str, Any],
+        subject: Union[str, Any], # subject recebe o id do usuario
         expires_delta: Optional[int] = None) -> str:
     if expires_delta is not None:
         expires = datetime.utcnow() + timedelta(expires_delta)

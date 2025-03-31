@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Request, status, HTTPException
 from fastapi.responses import JSONResponse, Response
+
 from sqlalchemy.orm import Session
+
 from models.url_models import UserModel
 from services.db_services import session_local
 from services.authentication_services import hash_password, verify_password, create_access_token
@@ -22,9 +24,9 @@ async def create_user(
         UserModel.username == username).first()
     
     if existing_user:
-        return JSONResponse(
-            content={'message':'Usuário já existe!'},
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Usuário ja existe!'
         )
     
     new_user = UserModel(
@@ -75,6 +77,7 @@ async def login_user(
     
     return response
 
+# rota para fazer logout do usuário
 @user_router.get('/logout', status_code=status.HTTP_200_OK)
 async def logout(response: Response):
     response.delete_cookie("access_token")

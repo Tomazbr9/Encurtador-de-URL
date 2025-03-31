@@ -1,13 +1,19 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
-from models.url_models import UrlModel
+from fastapi.requests import Request
+
 from sqlalchemy.orm import Session
+
 from services.db_services import session_local
 from services.url_services import generate_code, is_valid_url
 from services.authentication_services import get_current_user_optional
-from fastapi.requests import Request
+
 from typing import Optional
+
+from models.url_models import UrlModel, UserModel
 from models.url_models import UserModel
+
+from controllers.controllers import Controller
 
 url_router = APIRouter()
 
@@ -53,10 +59,14 @@ async def shorten_url(
     )
 
 # Rota criada para deletar urls
-url_router.post('/delete_url/{id}', status_code=status.HTTP_202_ACCEPTED)
+@url_router.delete('/delete_url/{id}', status_code=status.HTTP_202_ACCEPTED)
 async def delete_url(id: str, db: Session = Depends(session_local)):
-    db.query(UrlModel).filter(UrlModel.id == id).delete()
-    
+    con = Controller(UrlModel)
+    deleted = con.delete_register_crud(id, db)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="URL não encontrada")
+    return JSONResponse(content={'message': 'Url deletada com sucesso'})
 
 # Rota para redirecionar para url original
 @url_router.get('/{short_url}', status_code=status.HTTP_200_OK)

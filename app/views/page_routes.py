@@ -1,5 +1,7 @@
 from fastapi import APIRouter, status, Request, Depends
+
 from sqlalchemy.orm import Session
+
 from core.settings import TEMPLATES
 from services.db_services import session_local
 from models.url_models import UserModel
@@ -12,7 +14,8 @@ page_router = APIRouter()
 async def home(request: Request, user = Depends(get_current_user_optional)):
     context = {
         'request': request,
-        'user': user
+        'user': user,
+        'title': 'Home'
     }
     return TEMPLATES.TemplateResponse('home.html', context=context)
 
@@ -21,7 +24,8 @@ async def home(request: Request, user = Depends(get_current_user_optional)):
 async def login(request: Request):
     context = {
         'request': request,
-        'title': 'Por favor, faça login',
+        'message_top': 'Por favor, faça login',
+        'title': 'Login',
         'btn_name': 'Login',
         'id_form': 'formLogin'
     }
@@ -32,12 +36,14 @@ async def login(request: Request):
 async def register(request: Request):
     context = {
         'request': request,
-        'title': 'Registre-se',
+        'message_top': 'Registre-se',
+        'title': 'Register',
         'btn_name': 'Registrar',
         'id_form': 'formRegister'
     }
     return TEMPLATES.TemplateResponse('auth.html', context=context)
 
+# rota protegida para acessar historico de urls
 @page_router.get('/historic', status_code=status.HTTP_200_OK)
 async def historic(
     request: Request,
@@ -48,13 +54,15 @@ async def historic(
     user = db.query(UserModel).filter(
         UserModel.id == user['user_id']
     ).first()
-
+    
+    # obtem todas as urls vinculadas ao usuário logado
     urls = user.urls if user else None
 
     context = {
         'request': request,
         'urls': urls,
-        'user': user
+        'user': user,
+        'title': 'historic'
     }
 
     return TEMPLATES.TemplateResponse('historic.html', context=context)

@@ -59,7 +59,6 @@ if(formLogin){
             if (response.ok) {
                 loginMessageError.style.display = 'none'
                 window.location.href = '/home'
-                localStorage.setItem('access_token', data.access_token)
             } else {
                 loginMessageError.style.display = 'block'
                 loginMessageError.textContent = data.detail || 'Usuário ou senha inválidos'
@@ -76,25 +75,34 @@ if(formRegister){
     document.getElementById('formRegister').addEventListener('submit', async (event)=>{
         event.preventDefault()
 
-        const usernameLogin = document.getElementById('usernameLogin').value
-        const passwordLogin = document.getElementById('passwordlogin').value
-        const loginMessageError = document.getElementById('loginMessageError')
+        const usernameRegister = document.getElementById('usernameLogin').value
+        const passwordRegister = document.getElementById('passwordlogin').value
+        const registerMessageError = document.getElementById('loginMessageError')
 
-        await fetch('/register_user/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify(
-                {'username': usernameLogin, 'password': passwordLogin}
-            )
-        }).then(response => response.json()).then(data => {
+        try {
+            const response = await fetch('/register_user/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'username': usernameRegister, 'password': passwordRegister
+                })
+            })
+
+            const data = await response.json()
+
+            if (response.ok) {
+                loginMessageError.style.display = 'none'
+                window.location.href = '/login'
+            } else {
+                registerMessageError.style.display = 'block'
+                registerMessageError.textContent = data.detail || 'Usuário ou senha inválidos'
+            }
+        } catch (error) {
             loginMessageError.style.display = 'block'
-            loginMessageError.textContent = data.message
-        }).catch(error => {
-            loginMessageError.style.display = 'block'
-            loginMessageError.textContent = 'Erro ao fazer registro'
-        })
+            loginMessageError.textContent = error.message || 'Erro ao fazer login'
+        }
     })
 }
 
@@ -105,7 +113,6 @@ if(logout){
         const response = await fetch('/logout')
 
         if(response){
-            console.log("tudo ok")
             window.location.href = '/home'
         } 
         else {
@@ -114,3 +121,18 @@ if(logout){
     })
 }
 
+async function deleteUrl(id){
+
+    const response = await fetch(`/delete_url/${id}/`, {
+        method: 'DELETE'
+    })
+    
+    const data = response.json()
+
+    if(response){
+        location.reload()
+    }
+    else {
+        console.error('Erro ao deletar url')
+    }
+}
