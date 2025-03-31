@@ -24,7 +24,7 @@ Este projeto é um encurtador de URLs desenvolvido em Python. Ele foi criado com
 - **FastAPI**: Framework utilizado para construção da API.
 - **SQLAlchemy**: Biblioteca ORM utilizada para interação com o banco de dados.
 - **python-jose**: Biblioteca utilizada para autenticação JWT.
-- **C++**, **C**, **PowerShell**, **Cython**, **HTML**: Outras linguagens presentes no projeto, conforme indicado pelas estatísticas do GitHub.
+- *Java script*, *CSS* **HTML**: Para o front-end do projeto.
 
 ## Como Executar o Projeto
 
